@@ -37,11 +37,21 @@ public:
 
   template <yap::expr_kind OtherExprKind, typename OtherTuple>
   Tensor &operator=(TensorExpression<OtherExprKind, OtherTuple> const &other) {
-    if constexpr (device_type == DeviceType::Simd) {
+    if constexpr (device_type == DeviceType::Simd &&
+                  simd::PacketTraits<ElementType>::is_vectorizable) {
       auto &_storage = storage();
-      auto num_packets = _storage.num_elements() / simd::PacketTraits<ElementType>::size;
+      auto packet_size = simd::PacketTraits<ElementType>::size;
+      auto num_packets = _storage.num_elements() / packet_size;
       for (std::ptrdiff_t i = 0; i < num_packets; ++i) {
         _storage.storePacket(i, yap::transform(other, GetPacket{i}));
+      }
+      for (std::ptrdiff_t i = num_packets * packet_size; i < _storage.num_elements(); ++i) {
+        _storage.getCoeff(i) = yap::evaluate(yap::transform(other, GetCoeff{i}));
+      }
+    } else {
+      auto &_storage = storage();
+      for (std::ptrdiff_t i = 0; i < _storage.num_elements(); ++i) {
+        _storage.getCoeff(i) = yap::evaluate(yap::transform(other, GetCoeff{i}));
       }
     }
     return *this;

@@ -18,5 +18,8 @@ public:
 };
 
 BOOST_YAP_USER_BINARY_OPERATOR(plus, TensorExpression, TensorExpression);
+BOOST_YAP_USER_BINARY_OPERATOR(minus, TensorExpression, TensorExpression);
+BOOST_YAP_USER_BINARY_OPERATOR(multiplies, TensorExpression, TensorExpression);
+BOOST_YAP_USER_BINARY_OPERATOR(divides, TensorExpression, TensorExpression);
 
 } // namespace fasttensor
