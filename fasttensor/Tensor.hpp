@@ -22,7 +22,7 @@ public:
 
   Tensor(std::array<std::ptrdiff_t, Rank> dimensions)
       : TensorExpression<yap::expr_kind::terminal, hana::tuple<TStorage>>{
-            hana::tuple<TStorage>(TStorage(dimensions))} {}
+            hana::make_tuple(TStorage(dimensions))} {}
 
   auto &storage() { return yap::value(*this); }
 
