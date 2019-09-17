@@ -3,6 +3,7 @@
 #include "TensorExpression.hpp"
 #include "boost/yap/print.hpp"
 #include "gtest/gtest.h"
+#include <array>
 #include <iostream>
 
 using namespace boost;
@@ -17,8 +18,8 @@ int main(int argc, char **argv) {
 
   cout << "Device Type: " << static_cast<int>(device_type) << endl;
 
-  Tensor<int, 2> t(std::array<ptrdiff_t, 2>{4, 2});
-  Tensor<int, 2> q(std::array<ptrdiff_t, 2>{4, 2});
+  Tensor<int, 2> t(array<ptrdiff_t, 2>{4, 2});
+  Tensor<int, 2> q(array<ptrdiff_t, 2>{4, 2});
   auto result = q + t;
   yap::print(cout, result);
   return RUN_ALL_TESTS();

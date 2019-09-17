@@ -1,5 +1,7 @@
 #include "Tensor.hpp"
 #include "gtest/gtest.h"
+#include <array>
+#include <cstddef>
 
 using namespace std;
 using namespace fasttensor;
