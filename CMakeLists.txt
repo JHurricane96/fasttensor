@@ -5,6 +5,16 @@ set(CMAKE_CXX_FLAGS "-Wall -Wextra")
 set(CMAKE_CXX_FLAGS_DEBUG "-g")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
+option (FORCE_COLORED_OUTPUT "Always produce ANSI-colored output (GNU/Clang only)." TRUE)
+
+if(${FORCE_COLORED_OUTPUT})
+	if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+		add_compile_options(-fdiagnostics-color=always)
+	elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+		add_compile_options(-fcolor-diagnostics)
+	endif()
+endif()
+
 set(CMAKE_CXX_STANDARD 17)
 
 include(clang-format.cmake)
