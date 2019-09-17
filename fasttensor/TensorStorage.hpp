@@ -19,7 +19,8 @@ public:
 
   TensorStorage(std::array<std::ptrdiff_t, Rank> dimensions) : _dimensions(dimensions) {
     _num_elements = utils::fold<Rank - 1, std::ptrdiff_t>(_dimensions, std::multiplies());
-    _elements = new (std::align_val_t(simd::PacketSize)) ElementType[_num_elements];
+    _elements = reinterpret_cast<ElementType *>(operator new[](sizeof(ElementType) * _num_elements,
+                                                               std::align_val_t(simd::PacketSize)));
   }
 
   TensorStorage(const TensorStorage &other) : TensorStorage(other._dimensions) {
