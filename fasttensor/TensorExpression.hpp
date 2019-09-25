@@ -1,25 +1,19 @@
 #pragma once
 
 #include "TensorExpression.fwd.hpp"
-#include "Transforms/GetPacket.hpp"
-#include "boost/yap/algorithm.hpp"
-
-namespace yap = boost::yap;
+#include <type_traits>
 
 namespace fasttensor {
 
-template <boost::yap::expr_kind ExpressionKind, typename Tuple>
-class TensorExpression {
-public:
-  static const boost::yap::expr_kind kind = ExpressionKind;
-  Tuple elements;
+class TensorExpression {};
 
-  auto getPacket(std::ptrdiff_t index) { return yap::transform(*this, GetPacket{index}); }
-};
+template <typename T>
+constexpr bool is_tensor_expr = std::is_base_of_v<TensorExpression, T>;
 
-BOOST_YAP_USER_BINARY_OPERATOR(plus, TensorExpression, TensorExpression);
-BOOST_YAP_USER_BINARY_OPERATOR(minus, TensorExpression, TensorExpression);
-BOOST_YAP_USER_BINARY_OPERATOR(multiplies, TensorExpression, TensorExpression);
-BOOST_YAP_USER_BINARY_OPERATOR(divides, TensorExpression, TensorExpression);
+template <typename... T>
+constexpr bool are_tensor_exprs = (... && is_tensor_expr<T>);
+
+template <typename... T>
+using enable_if_tensor_exprs = std::enable_if_t<are_tensor_exprs<T...>>;
 
 } // namespace fasttensor

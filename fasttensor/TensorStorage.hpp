@@ -2,7 +2,6 @@
 
 #include "Simd/Simd.hpp"
 #include "UnrollUtils.hpp"
-#include "boost/hana.hpp"
 #include <algorithm>
 #include <execution>
 #include <functional>
@@ -46,17 +45,25 @@ public:
 
   const auto &dimensions() { return _dimensions; }
 
-  PacketType getPacket(std::ptrdiff_t index) { return simd::Load(&_elements[index * PacketSize]); }
+  PacketType getPacket(std::ptrdiff_t index) const {
+    return simd::Load(&_elements[index * PacketSize]);
+  }
 
   void storePacket(std::ptrdiff_t index, PacketType packet) {
     simd::Store(&_elements[index * PacketSize], packet);
   }
 
-  ElementType &getCoeff(std::ptrdiff_t index) { return _elements[index]; }
+  const ElementType &getCoeff(std::ptrdiff_t index) const { return _elements[index]; }
 
-  ElementType &getCoeff(std::array<std::ptrdiff_t, Rank> indices) {
+  const ElementType &getCoeff(std::array<std::ptrdiff_t, Rank> indices) const {
     return _elements[utils::getIndex<Rank - 1>(_dimensions, indices)];
   }
+
+  ElementType &operator()(std::array<std::ptrdiff_t, Rank> indices) {
+    return _elements[utils::getIndex<Rank - 1>(_dimensions, indices)];
+  }
+
+  void storeCoeff(const ElementType &element, std::ptrdiff_t index) { _elements[index] = element; }
 
   ~TensorStorage() { operator delete[](_elements, std::align_val_t(simd::PacketSize)); }
 

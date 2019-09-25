@@ -22,7 +22,6 @@ include(clang-format.cmake)
 option(BUILD_TESTS "Set to ON to build tests" ON)
 
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-set(BOOST_ROOT "" CACHE PATH "Path to Boost libraries")
 
 add_subdirectory(fasttensor)
 

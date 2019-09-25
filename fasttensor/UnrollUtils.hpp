@@ -1,5 +1,7 @@
 #pragma once
 
+#include <array>
+
 namespace fasttensor::utils {
 
 template <std::size_t iter, typename Scalar, std::size_t N, typename Op>

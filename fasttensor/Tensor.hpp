@@ -1,61 +1,69 @@
 #pragma once
 
 #include "Device.hpp"
+#include "RefSelector.hpp"
 #include "Simd/Simd.hpp"
 #include "TensorExpression.hpp"
 #include "TensorStorage.hpp"
-#include "Transforms/GetCoeff.hpp"
-#include "Transforms/GetPacket.hpp"
 #include "UnrollUtils.hpp"
-#include "boost/yap/algorithm.hpp"
-
-namespace yap = boost::yap;
-namespace hana = boost::hana;
 
 namespace fasttensor {
 
 template <typename ElementType, int Rank>
-class Tensor : public TensorExpression<yap::expr_kind::terminal,
-                                       hana::tuple<TensorStorage<ElementType, Rank>>> {
+class Tensor;
+
+template <typename ElementType, int Rank>
+struct ref_selector<Tensor<ElementType, Rank>> {
+  using type = Tensor<ElementType, Rank> &;
+};
+
+template <typename ElementType, int Rank>
+class Tensor : public TensorExpression {
 public:
   using TStorage = TensorStorage<ElementType, Rank>;
+  using Self = Tensor<ElementType, Rank>;
 
-  Tensor(std::array<std::ptrdiff_t, Rank> dimensions)
-      : TensorExpression<yap::expr_kind::terminal, hana::tuple<TStorage>>{
-            hana::make_tuple(TStorage(dimensions))} {}
+  Tensor(std::array<std::ptrdiff_t, Rank> dimensions) : _storage(dimensions) {}
 
-  auto &storage() { return yap::value(*this); }
+  Tensor(const Self &other) : _storage(other._storage) {}
+
+  auto &storage() { return _storage; }
 
   template <typename... Index>
   ElementType &operator()(Index... indices) {
-    return storage().getCoeff(std::array<std::ptrdiff_t, Rank>{indices...});
+    return _storage(std::array<std::ptrdiff_t, Rank>{indices...});
   }
 
-  auto num_elements() { return storage().num_elements(); }
+  auto num_elements() { return _storage.num_elements(); }
 
-  const auto &dimensions() { return storage().dimensions(); }
+  const auto &dimensions() { return _storage.dimensions(); }
 
-  template <yap::expr_kind OtherExprKind, typename OtherTuple>
-  Tensor &operator=(TensorExpression<OtherExprKind, OtherTuple> const &other) {
+  auto getPacket(std::ptrdiff_t n) const { return _storage.getPacket(n); }
+
+  auto getCoeff(std::ptrdiff_t n) const { return _storage.getCoeff(n); }
+
+  template <typename OtherExpr, typename = enable_if_tensor_exprs<OtherExpr>>
+  Tensor &operator=(OtherExpr const &other) {
     if constexpr (device_type == DeviceType::Simd &&
                   simd::PacketTraits<ElementType>::is_vectorizable) {
-      auto &_storage = storage();
       auto packet_size = simd::PacketTraits<ElementType>::size;
       auto num_packets = _storage.num_elements() / packet_size;
       for (std::ptrdiff_t i = 0; i < num_packets; ++i) {
-        _storage.storePacket(i, yap::transform(other, GetPacket{i}));
+        _storage.storePacket(i, other.getPacket(i));
       }
       for (std::ptrdiff_t i = num_packets * packet_size; i < _storage.num_elements(); ++i) {
-        _storage.getCoeff(i) = yap::evaluate(yap::transform(other, GetCoeff{i}));
+        _storage.storeCoeff(other.getCoeff(i), i);
       }
     } else {
-      auto &_storage = storage();
       for (std::ptrdiff_t i = 0; i < _storage.num_elements(); ++i) {
-        _storage.getCoeff(i) = yap::evaluate(yap::transform(other, GetCoeff{i}));
+        _storage.storeCoeff(other.getCoeff(i), i);
       }
     }
     return *this;
   }
+
+private:
+  TStorage _storage;
 };
 
 } // namespace fasttensor

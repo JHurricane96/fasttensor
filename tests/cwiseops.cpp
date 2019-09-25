@@ -1,3 +1,4 @@
+#include "CWiseBinaryOp.hpp"
 #include "Tensor.hpp"
 #include "gtest/gtest.h"
 #include <array>
@@ -12,7 +13,7 @@ Tensor<ElementType, Rank> CreateTensor(array<ptrdiff_t, Rank> dimensions) {
   auto num_elts = t.num_elements();
   auto &_storage = t.storage();
   for (int i = 0; i < num_elts; ++i) {
-    _storage.getCoeff(i) = i;
+    _storage.storeCoeff(i, i);
   }
   return t;
 }
