@@ -134,6 +134,23 @@ TEST(CWiseOps, DivFloat) {
   }
 }
 
+TEST(CWiseOps, MultipleOpsFloat) {
+  int n_i = 10, n_j = 11, n_k = 13;
+  array<ptrdiff_t, 3> dimensions{n_i, n_j, n_k};
+  auto a = CreateTensor<float, 3>(dimensions);
+  auto b = CreateTensor<float, 3>(dimensions);
+  auto c = CreateTensor<float, 3>(dimensions);
+  auto result = CreateTensor<float, 3>(dimensions);
+  result = a + b - c;
+  for (int i = 0; i < n_i; ++i) {
+    for (int j = 0; j < n_j; ++j) {
+      for (int k = 0; k < n_k; ++k) {
+        EXPECT_FLOAT_EQ(result(i, j, k), k + n_k * (j + (n_j * i)));
+      }
+    }
+  }
+}
+
 TEST(CWiseOps, AddDouble) {
   int n_i = 10, n_j = 11, n_k = 13;
   array<ptrdiff_t, 3> dimensions{n_i, n_j, n_k};
