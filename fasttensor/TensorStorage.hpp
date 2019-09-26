@@ -3,7 +3,6 @@
 #include "Simd/Simd.hpp"
 #include "UnrollUtils.hpp"
 #include <algorithm>
-#include <execution>
 #include <functional>
 
 namespace fasttensor {
