@@ -5,12 +5,12 @@ set(CMAKE_CXX_FLAGS "-Wall -Wextra")
 set(CMAKE_CXX_FLAGS_DEBUG "-g")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
-if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+set(USE_LIBCPP ON CACHE BOOL "Use libc++ if compiling with clang")
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" AND USE_LIBCPP)
 	set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -stdlib=libc++")
 endif()
 
-option (FORCE_COLORED_OUTPUT "Always produce ANSI-colored output (GNU/Clang only)." TRUE)
-
+option(FORCE_COLORED_OUTPUT "Always produce ANSI-colored output (GNU/Clang only)." TRUE)
 if(${FORCE_COLORED_OUTPUT})
 	if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
 		add_compile_options(-fdiagnostics-color=always)
