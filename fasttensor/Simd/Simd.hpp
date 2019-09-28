@@ -1,3 +1,9 @@
 #pragma once
 
-#include "Avx2.hpp"
+#include "SimdMacros.hpp"
+
+#if SSE_INSTR_SET > 7
+#  include "Avx2.hpp"
+#else
+#  include "Generic.hpp"
+#endif

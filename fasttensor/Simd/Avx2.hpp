@@ -1,6 +1,5 @@
 #pragma once
 
-#include "SimdMacros.hpp"
 #include <type_traits>
 
 namespace fasttensor::simd {
