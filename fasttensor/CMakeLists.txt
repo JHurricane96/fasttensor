@@ -7,6 +7,8 @@ target_include_directories(fasttensor INTERFACE
 	$<INSTALL_INTERFACE:.>
 )
 
+target_compile_features(fasttensor INTERFACE cxx_std_17)
+
 install(TARGETS fasttensor EXPORT fasttensor_config
 	ARCHIVE DESTINATION lib
 	LIBRARY DESTINATION lib

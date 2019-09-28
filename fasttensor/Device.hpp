@@ -9,6 +9,7 @@ constexpr DeviceType device_type = DeviceType::Gpu;
 #elif defined FASTTENSOR_SIMD
 constexpr DeviceType device_type = DeviceType::Simd;
 #else
+#  define FASTTENSOR_NORMAL
 constexpr DeviceType device_type = DeviceType::Normal;
 #endif
 

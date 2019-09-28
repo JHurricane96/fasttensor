@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.14.6)
-project(fasttensor)
+project(fasttensor LANGUAGES CXX)
 
 set(CMAKE_CXX_FLAGS "-Wall -Wextra")
 set(CMAKE_CXX_FLAGS_DEBUG "-g")
@@ -18,8 +18,6 @@ if(${FORCE_COLORED_OUTPUT})
 		add_compile_options(-fcolor-diagnostics)
 	endif()
 endif()
-
-set(CMAKE_CXX_STANDARD 17)
 
 include(clang-format.cmake)
 

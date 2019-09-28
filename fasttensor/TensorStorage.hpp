@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Memory.hpp"
 #include "Simd/Simd.hpp"
 #include "UnrollUtils.hpp"
 #include <algorithm>
@@ -17,8 +18,7 @@ public:
 
   TensorStorage(std::array<std::ptrdiff_t, Rank> dimensions) : _dimensions(dimensions) {
     _num_elements = utils::fold<Rank - 1, std::ptrdiff_t>(_dimensions, std::multiplies());
-    _elements = reinterpret_cast<ElementType *>(operator new[](sizeof(ElementType) * _num_elements,
-                                                               std::align_val_t(simd::PacketSize)));
+    _elements = AllocateMemory<ElementType>(_num_elements);
   }
 
   TensorStorage(const TensorStorage &other) : TensorStorage(other._dimensions) {
@@ -64,7 +64,7 @@ public:
 
   void storeCoeff(const ElementType &element, std::ptrdiff_t index) { _elements[index] = element; }
 
-  ~TensorStorage() { operator delete[](_elements, std::align_val_t(simd::PacketSize)); }
+  ~TensorStorage() { DeallocateMemory(_elements); }
 
 private:
   std::array<std::ptrdiff_t, Rank> _dimensions;
