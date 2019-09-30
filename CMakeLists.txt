@@ -22,6 +22,7 @@ endif()
 include(clang-format.cmake)
 
 option(BUILD_TESTS "Set to ON to build tests" ON)
+option(BUILD_BENCHMARKS "Set to ON to build benchmarks" ON)
 
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 
@@ -30,4 +31,8 @@ add_subdirectory(fasttensor)
 if(BUILD_TESTS)
 	add_subdirectory(ext/googletest)
 	add_subdirectory(tests)
+endif()
+
+if(BUILD_BENCHMARKS)
+	add_subdirectory(bench)
 endif()

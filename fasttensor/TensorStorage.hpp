@@ -1,5 +1,6 @@
 #pragma once
 
+#include "GpuDeviceFunction.hpp"
 #include "Memory.hpp"
 #include "Simd/Simd.hpp"
 #include "UnrollUtils.hpp"
@@ -25,7 +26,7 @@ public:
     std::copy(other._elements, other._elements + _num_elements, _elements);
   }
 
-  friend void swap(TensorStorage &first, TensorStorage &second) noexcept {
+  inline friend void swap(TensorStorage &first, TensorStorage &second) noexcept {
     using std::swap;
 
     swap(first._dimensions, second._dimensions);
@@ -35,34 +36,38 @@ public:
 
   TensorStorage(TensorStorage &&other) noexcept : TensorStorage() { swap(*this, other); }
 
-  TensorStorage &operator=(TensorStorage other) {
+  inline TensorStorage &operator=(TensorStorage other) {
     swap(*this, other);
     return *this;
   }
 
-  auto num_elements() { return _num_elements; }
+  inline auto elements() { return _elements; }
 
-  const auto &dimensions() { return _dimensions; }
+  inline auto num_elements() { return _num_elements; }
 
-  PacketType getPacket(std::ptrdiff_t index) const {
+  inline const auto &dimensions() { return _dimensions; }
+
+  inline PacketType getPacket(std::ptrdiff_t index) const {
     return simd::Load(&_elements[index * PacketSize]);
   }
 
-  void storePacket(std::ptrdiff_t index, PacketType packet) {
+  inline void storePacket(std::ptrdiff_t index, PacketType packet) {
     simd::Store(&_elements[index * PacketSize], packet);
   }
 
-  const ElementType &getCoeff(std::ptrdiff_t index) const { return _elements[index]; }
+  GPU_DEVICE_FUNC inline const ElementType &getCoeff(std::ptrdiff_t index) const {
+    return _elements[index];
+  }
 
-  const ElementType &getCoeff(std::array<std::ptrdiff_t, Rank> indices) const {
+  inline const ElementType &getCoeff(std::array<std::ptrdiff_t, Rank> indices) const {
     return _elements[utils::getIndex<Rank - 1>(_dimensions, indices)];
   }
 
-  ElementType &operator()(std::array<std::ptrdiff_t, Rank> indices) {
+  inline ElementType &operator()(std::array<std::ptrdiff_t, Rank> indices) {
     return _elements[utils::getIndex<Rank - 1>(_dimensions, indices)];
   }
 
-  void storeCoeff(const ElementType &element, std::ptrdiff_t index) { _elements[index] = element; }
+  inline void storeCoeff(ElementType element, std::ptrdiff_t index) { _elements[index] = element; }
 
   ~TensorStorage() { DeallocateMemory(_elements); }
 

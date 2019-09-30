@@ -1,3 +1,4 @@
+#include "Assign.hpp"
 #include "CWiseBinaryOp.hpp"
 #include "Tensor.hpp"
 #include "gtest/gtest.h"

@@ -1,7 +1,9 @@
 #pragma once
 
+#include "GpuDeviceFunction.hpp"
 #include "RefSelector.hpp"
 #include "Simd/Simd.hpp"
+#include "Tensor.hpp"
 #include "TensorExpression.hpp"
 
 namespace fasttensor {
@@ -20,7 +22,7 @@ public:
   CWiseBinaryOp(const LeftExpr &left_expr, const RightExpr &right_expr)
       : _left_expr(left_expr), _right_expr(right_expr) {}
 
-  auto getPacket(std::ptrdiff_t n) const {
+  inline auto getPacket(std::ptrdiff_t n) const {
     if constexpr (Op == BinaryOp::Plus) {
       return simd::Add(_left_expr.getPacket(n), _right_expr.getPacket(n));
     } else if constexpr (Op == BinaryOp::Minus) {
@@ -32,7 +34,7 @@ public:
     }
   }
 
-  auto getCoeff(std::ptrdiff_t n) const {
+  GPU_DEVICE_FUNC inline auto getCoeff(std::ptrdiff_t n) const {
     if constexpr (Op == BinaryOp::Plus) {
       return _left_expr.getCoeff(n) + _right_expr.getCoeff(n);
     } else if constexpr (Op == BinaryOp::Minus) {
@@ -45,32 +47,32 @@ public:
   }
 
 private:
-  ref_selector_t<LeftExpr> _left_expr;
-  ref_selector_t<RightExpr> _right_expr;
+  typename ref_selector<LeftExpr>::type _left_expr;
+  typename ref_selector<RightExpr>::type _right_expr;
 };
 
 template <typename LeftExpr, typename RightExpr,
           typename = enable_if_tensor_exprs<LeftExpr, RightExpr>>
-auto operator+(LeftExpr const &left_expr, RightExpr const &right_expr) {
+inline auto operator+(LeftExpr const &left_expr, RightExpr const &right_expr) {
   return CWiseBinaryOp<const LeftExpr, const RightExpr, BinaryOp::Plus>(left_expr, right_expr);
 }
 
 template <typename LeftExpr, typename RightExpr,
           typename = enable_if_tensor_exprs<LeftExpr, RightExpr>>
-auto operator-(LeftExpr const &left_expr, RightExpr const &right_expr) {
+inline auto operator-(LeftExpr const &left_expr, RightExpr const &right_expr) {
   return CWiseBinaryOp<const LeftExpr, const RightExpr, BinaryOp::Minus>(left_expr, right_expr);
 }
 
 template <typename LeftExpr, typename RightExpr,
           typename = enable_if_tensor_exprs<LeftExpr, RightExpr>>
-auto operator*(LeftExpr const &left_expr, RightExpr const &right_expr) {
+inline auto operator*(LeftExpr const &left_expr, RightExpr const &right_expr) {
   return CWiseBinaryOp<const LeftExpr, const RightExpr, BinaryOp::Multiplies>(left_expr,
                                                                               right_expr);
 }
 
 template <typename LeftExpr, typename RightExpr,
           typename = enable_if_tensor_exprs<LeftExpr, RightExpr>>
-auto operator/(LeftExpr const &left_expr, RightExpr const &right_expr) {
+inline auto operator/(LeftExpr const &left_expr, RightExpr const &right_expr) {
   return CWiseBinaryOp<const LeftExpr, const RightExpr, BinaryOp::Divides>(left_expr, right_expr);
 }
 
