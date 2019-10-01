@@ -13,14 +13,15 @@ namespace fasttensor {
 template <typename ElementType, int Rank>
 class Tensor;
 
-template <typename ElementType, int Rank>
-struct ref_selector<Tensor<ElementType, Rank>> {
-  using type = Tensor<ElementType, Rank> &;
-};
+template <typename T>
+constexpr bool is_tensor = false;
 
 template <typename ElementType, int Rank>
-struct ref_selector<const Tensor<ElementType, Rank>> {
-  using type = const Tensor<ElementType, Rank> &;
+constexpr bool is_tensor<Tensor<ElementType, Rank>> = true;
+
+template <typename T>
+struct ref_selector<T, typename std::enable_if_t<is_tensor<std::remove_cv_t<T>>>> {
+  using type = T &;
 };
 
 template <typename ElementType, int Rank>

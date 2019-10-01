@@ -2,7 +2,7 @@
 
 namespace fasttensor {
 
-template <typename T>
+template <typename T, typename = void>
 struct ref_selector {
   using type = T;
 };
