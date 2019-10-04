@@ -29,13 +29,9 @@ Tensor<ElementType, Rank> make_rand_tensor(array<ptrdiff_t, Rank> dimensions) {
   return t;
 }
 
-double square(const double num) {
-  return num * num;
-}
+double square(const double num) { return num * num; }
 
-double timer_mean(const BenchTimer &timer) {
-  return timer.total() / TRIES;
-}
+double timer_mean(const BenchTimer &timer) { return timer.total() / TRIES; }
 
 double timer_sd(const BenchTimer &timer) {
   double mean_squares = timer.squared_total() / TRIES;
@@ -47,7 +43,8 @@ void print_results(string test_name, const BenchTimer &timer, double flops_facto
   auto mean = timer_mean(timer);
   auto sd = timer_sd(timer);
   auto flops = flops_factor * REPEAT * TRIES / (pow(1024., 3) * timer.total());
-  std::cout << test_name << " :: Mean: " << mean << "s, SD: " << sd << "s; " << flops << " GFlops\n";
+  std::cout << test_name << " :: Mean: " << mean << "s, SD: " << sd << "s; " << flops
+            << " GFlops\n";
 }
 
 int main() {

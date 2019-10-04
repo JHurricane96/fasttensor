@@ -7,7 +7,7 @@ if(NOT CLANG_FORMAT_EXECUTABLE)
 endif()
 
 # Get all project files
-file(GLOB_RECURSE ALL_SOURCE_FILES fasttensor/*.hpp tests/*.cpp)
+file(GLOB_RECURSE ALL_SOURCE_FILES fasttensor/*.hpp tests/*.cpp bench/*.h bench/*.cpp)
 
 # Add target to build
 add_custom_target(
