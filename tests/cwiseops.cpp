@@ -142,11 +142,21 @@ TEST(CWiseOps, MultipleOpsFloat) {
   auto b = CreateTensor<float, 3>(dimensions);
   auto c = CreateTensor<float, 3>(dimensions);
   auto result = CreateTensor<float, 3>(dimensions);
+
   result = a + b - c;
   for (int i = 0; i < n_i; ++i) {
     for (int j = 0; j < n_j; ++j) {
       for (int k = 0; k < n_k; ++k) {
         EXPECT_FLOAT_EQ(result(i, j, k), k + n_k * (j + (n_j * i)));
+      }
+    }
+  }
+
+  result = a + b + c;
+  for (int i = 0; i < n_i; ++i) {
+    for (int j = 0; j < n_j; ++j) {
+      for (int k = 0; k < n_k; ++k) {
+        EXPECT_FLOAT_EQ(result(i, j, k), 3 * (k + n_k * (j + (n_j * i))));
       }
     }
   }

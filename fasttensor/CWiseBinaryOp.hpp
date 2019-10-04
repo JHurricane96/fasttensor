@@ -19,6 +19,9 @@ class CWiseBinaryOp : public TensorExpression {
                 "Expressions in CWiseBinaryOp must inherit from TensorExpression");
 
 public:
+  using LeftExprRefType = ref_selector_t<LeftExpr>;
+  using RightExprRefType = ref_selector_t<RightExpr>;
+
   CWiseBinaryOp(const LeftExpr &left_expr, const RightExpr &right_expr)
       : _left_expr(left_expr), _right_expr(right_expr) {}
 
@@ -46,9 +49,13 @@ public:
     }
   }
 
+  inline LeftExprRefType leftExpr() const { return _left_expr; }
+
+  inline RightExprRefType rightExpr() const { return _right_expr; }
+
 private:
-  typename ref_selector<LeftExpr>::type _left_expr;
-  typename ref_selector<RightExpr>::type _right_expr;
+  LeftExprRefType _left_expr;
+  RightExprRefType _right_expr;
 };
 
 template <typename LeftExpr, typename RightExpr,

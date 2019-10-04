@@ -43,6 +43,8 @@ public:
 
   inline auto elements() { return _elements; }
 
+  inline const auto elements() const { return _elements; }
+
   inline auto num_elements() { return _num_elements; }
 
   inline const auto &dimensions() { return _dimensions; }
@@ -55,9 +57,7 @@ public:
     simd::Store(&_elements[index * PacketSize], packet);
   }
 
-  GPU_DEVICE_FUNC inline const ElementType &getCoeff(std::ptrdiff_t index) const {
-    return _elements[index];
-  }
+  inline const ElementType &getCoeff(std::ptrdiff_t index) const { return _elements[index]; }
 
   inline const ElementType &getCoeff(std::array<std::ptrdiff_t, Rank> indices) const {
     return _elements[utils::getIndex<Rank - 1>(_dimensions, indices)];

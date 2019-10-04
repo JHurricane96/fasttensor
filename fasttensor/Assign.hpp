@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Device.hpp"
+#include "StorageUnwrapper.hpp"
 #include "Tensor.hpp"
 
 namespace fasttensor {
@@ -42,10 +43,13 @@ __global__ void Kernel(ElementType *lhs_storage, OtherExpr rhs, int num_elements
 template <typename ElementType, int Rank, typename OtherExpr,
           typename = enable_if_tensor_exprs<OtherExpr>>
 inline void Assign(Tensor<ElementType, Rank> &lhs, OtherExpr const &rhs) {
+  auto unwrapped_rhs = UnwrapStorage(rhs);
+
   auto num_elements = lhs.num_elements();
-  int block_size = 256;
+  int block_size = 1024;
   int num_blocks = (num_elements + block_size - 1) / block_size;
-  Kernel<<<num_blocks, block_size>>>(lhs.storage().elements(), rhs, num_elements);
+
+  Kernel<<<num_blocks, block_size>>>(lhs.storage().elements(), unwrapped_rhs, num_elements);
   cudaDeviceSynchronize();
 }
 

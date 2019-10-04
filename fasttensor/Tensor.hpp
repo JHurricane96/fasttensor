@@ -36,6 +36,8 @@ public:
 
   inline auto &storage() { return _storage; }
 
+  inline const auto &storage() const { return _storage; }
+
   template <typename... Index>
   inline ElementType &operator()(Index... indices) {
     return _storage(std::array<std::ptrdiff_t, Rank>{indices...});
