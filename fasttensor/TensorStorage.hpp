@@ -43,7 +43,7 @@ public:
 
   inline auto elements() { return _elements; }
 
-  inline const auto elements() const { return _elements; }
+  inline auto elements() const { return _elements; }
 
   inline auto num_elements() { return _num_elements; }
 

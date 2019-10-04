@@ -16,7 +16,7 @@ public:
 
   inline auto elements() { return _elements; }
 
-  inline const auto elements() const { return _elements; }
+  inline auto elements() const { return _elements; }
 
 private:
   ElementType *_elements;
