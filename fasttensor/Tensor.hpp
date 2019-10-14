@@ -1,6 +1,8 @@
 #pragma once
 
+#include "DefaultDevice.hpp"
 #include "Device.hpp"
+#include "DeviceFactory.hpp"
 #include "GpuDeviceFunction.hpp"
 #include "RefSelector.hpp"
 #include "Simd/Simd.hpp"
@@ -8,9 +10,19 @@
 #include "TensorStorage.hpp"
 #include "UnrollUtils.hpp"
 
+#if defined FASTTENSOR_GPU
+#  include "GpuDevice.hpp"
+#endif
+
 namespace fasttensor {
 
-template <typename ElementType, int Rank>
+#if defined FASTTENSOR_GPU
+using DefaultDeviceType = GpuDevice;
+#else
+using DefaultDeviceType = DefaultDevice;
+#endif
+
+template <typename ElementType, int Rank, typename DeviceType = DefaultDeviceType>
 class Tensor;
 
 template <typename T>
@@ -24,15 +36,17 @@ struct ref_selector<T, typename std::enable_if_t<is_tensor<std::remove_cv_t<T>>>
   using type = T &;
 };
 
-template <typename ElementType, int Rank>
+template <typename ElementType, int Rank, typename DeviceType>
 class Tensor : public TensorExpression {
 public:
   using TStorage = TensorStorage<ElementType, Rank>;
-  using Self = Tensor<ElementType, Rank>;
+  using Self = Tensor<ElementType, Rank, DeviceType>;
 
-  Tensor(std::array<std::ptrdiff_t, Rank> dimensions) : _storage(dimensions) {}
+  Tensor(std::array<std::ptrdiff_t, Rank> dimensions)
+      : _storage(dimensions), _device(DeviceFactory<DeviceType>::GetDevice()) {}
 
-  Tensor(const Self &other) : _storage(other._storage) {}
+  Tensor(const Self &other)
+      : _storage(other._storage), _device(DeviceFactory<DeviceType>::GetDevice()) {}
 
   inline auto &storage() { return _storage; }
 
@@ -51,11 +65,14 @@ public:
 
   GPU_DEVICE_FUNC inline auto getCoeff(std::ptrdiff_t n) const { return _storage.getCoeff(n); }
 
+  inline auto &device() const { return _device; }
+
   template <typename OtherExpr, typename = enable_if_tensor_exprs<OtherExpr>>
   inline Tensor &operator=(OtherExpr const &);
 
 private:
   TStorage _storage;
+  DeviceType _device;
 };
 
 } // namespace fasttensor
