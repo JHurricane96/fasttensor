@@ -1,0 +1,3 @@
+CXX=clang++-8 CC=clang-8 ~/Downloads/cmake/bin/cmake .. \
+-GNinja -DCMAKE_INSTALL_PREFIX=~/fmt/fmt/ -DDEVICE_TYPE=GPU -DCMAKE_BUILD_TYPE=Release \
+-DCUDA_PATH=/usr/local/cuda-10.0 -DGPU_ARCH=37

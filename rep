@@ -1,0 +1,1 @@
+ninja && sudo perf record ./bench/bench && sudo perf report
