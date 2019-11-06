@@ -47,15 +47,12 @@ void print_results(string test_name, const BenchTimer &timer, double flops_facto
             << " GFlops\n";
 }
 
-template <typename Result, typename Operand>
-inline void _eager_eval(Result &result, Operand &operand) {
-  result = result + operand;
-}
-
 template <typename Result, typename Operand, typename... OtherOperands>
 inline void _eager_eval(Result &result, Operand &operand, OtherOperands &... other_operands) {
   result = result + operand;
-  _eager_eval(result, other_operands...);
+  if constexpr (sizeof...(other_operands) > 0) {
+    _eager_eval(result, other_operands...);
+  }
 }
 
 template <typename Result, typename Operand1, typename Operand2, typename... OtherOperands>
