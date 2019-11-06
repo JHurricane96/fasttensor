@@ -66,7 +66,7 @@ inline void eager_eval(Result &result, Operand1 &operand1, Operand2 &operand2,
 }
 
 int main() {
-  ptrdiff_t row = 1E4, col = 1E2, dep = 1E1;
+  ptrdiff_t row = 1E4, col = 1E2, dep = 1E2;
   array<ptrdiff_t, 3> dimensions{row, col, dep};
   auto a = make_rand_tensor<float, 3>(dimensions);
   auto b = make_rand_tensor<float, 3>(dimensions);
