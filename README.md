@@ -110,7 +110,7 @@ To run the tests and benchmarks on Linux:
 
 (Dependencies: CMake >= 3.14.6, clang++ >= 8, CUDA >= 9)
 
-1. Clone [this repo](https://github.com/JHurricane96/fastmatrix)
+1. Clone [this repo](https://github.com/JHurricane96/fasttensor)
 
 2. `mkdir build && cd build`
 
